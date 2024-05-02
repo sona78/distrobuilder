@@ -110,8 +110,16 @@ type DefinitionPackagesRepository struct {
 	DefinitionFilter `yaml:",inline"`
 	Name             string `yaml:"name"`           // Name of the repository
 	URL              string `yaml:"url"`            // URL (may differ based on manager)
+	Presence		 string `yaml:"presence,omitempty"` // Presence of the repository (always, build, runtime)
 	Type             string `yaml:"type,omitempty"` // For distros that have more than one repository manager
 	Key              string `yaml:"key,omitempty"`  // GPG armored keyring
+}
+
+// SetDefaultPresence sets the default presence to always.
+func (d *DefinitionPackagesRepository) SetDefaultPresence() {
+	if d.Presence == "" {
+		d.Presence = "always"
+	}
 }
 
 // CustomManagerCmd represents a command for a custom manager.
