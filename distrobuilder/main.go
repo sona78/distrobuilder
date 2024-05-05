@@ -398,7 +398,8 @@ func (c *cmdGlobal) preRunBuild(cmd *cobra.Command, args []string) error {
 
 	c.logger.Info("Managing repositories")
 
-	err = manager.ManageRepositories(imageTargets)
+	// buildphase == true
+	err = manager.ManageRepositories(imageTargets, true)
 	if err != nil {
 		return fmt.Errorf("Failed to manage repositories: %w", err)
 	}

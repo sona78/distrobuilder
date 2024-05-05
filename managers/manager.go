@@ -164,7 +164,7 @@ func (m *Manager) ManagePackages(imageTarget shared.ImageTarget) error {
 }
 
 // ManageRepositories manages repositories.
-func (m *Manager) ManageRepositories(imageTarget shared.ImageTarget) error {
+func (m *Manager) ManageRepositories(imageTarget shared.ImageTarget, buildPhase bool) error {
 	var err error
 
 	if m.def.Packages.Repositories == nil || len(m.def.Packages.Repositories) == 0 {
@@ -176,21 +176,24 @@ func (m *Manager) ManageRepositories(imageTarget shared.ImageTarget) error {
 			continue
 		}
 
-		// Run template on repo.URL
-		repo.URL, err = shared.RenderTemplate(repo.URL, m.def)
-		if err != nil {
-			return fmt.Errorf("Failed to render template: %w", err)
-		}
+		if (repo.Presence == "always" || repo.Presence == "") || (repo.Presence == "runtime" && !buildPhase)  || (repo.Presence == "build" && buildPhase){
 
-		// Run template on repo.Key
-		repo.Key, err = shared.RenderTemplate(repo.Key, m.def)
-		if err != nil {
-			return fmt.Errorf("Failed to render template: %w", err)
-		}
+			// Run template on repo.URL
+			repo.URL, err = shared.RenderTemplate(repo.URL, m.def)
+			if err != nil {
+				return fmt.Errorf("Failed to render template: %w", err)
+			}
 
-		err = m.mgr.manageRepository(repo)
-		if err != nil {
-			return fmt.Errorf("Error for repository %s: %w", repo.Name, err)
+			// Run template on repo.Key
+			repo.Key, err = shared.RenderTemplate(repo.Key, m.def)
+			if err != nil {
+				return fmt.Errorf("Failed to render template: %w", err)
+			}
+
+			err = m.mgr.manageRepository(repo)
+			if err != nil {
+				return fmt.Errorf("Error for repository %s: %w", repo.Name, err)
+			}
 		}
 	}
 

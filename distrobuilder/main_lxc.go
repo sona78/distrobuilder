@@ -132,7 +132,8 @@ func (c *cmdLXC) runPack(cmd *cobra.Command, args []string, overlayDir string) e
 
 	c.global.logger.Info("Managing repositories")
 
-	err = manager.ManageRepositories(imageTargets)
+	// buildphase == false
+	err = manager.ManageRepositories(imageTargets, false)
 	if err != nil {
 		return fmt.Errorf("Failed to manage repositories: %w", err)
 	}
